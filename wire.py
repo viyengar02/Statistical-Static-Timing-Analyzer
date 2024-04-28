@@ -1,11 +1,20 @@
 class Wire:
-    def __init__(self, line):
+    start_wire = ''
+    stop_wire = ''
+    a0 = 0
+    a1 = 0
+    a2 = 0
+    a3 = 0
+    def __init__(self):
+        pass
+
+    def initialize(self, line):
         self.start_wire = line[0]
         self.stop_wire = line[1]
-        self.a0 = line[2]
-        self.a1 = line[3]
-        self.a2 = line[4]
-        self.a3 = line[5]
+        self.a0 = float(line[2])
+        self.a1 = float(line[3])
+        self.a2 = float(line[4])
+        self.a3 = float(line[5])
 
 def print_wires(wires):
     for wire in wires:

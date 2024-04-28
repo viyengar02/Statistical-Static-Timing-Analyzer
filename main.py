@@ -33,7 +33,9 @@ def get_time_file(filename):
     
     wires = []
     for line in lines:
-        wires.append(Wire(line))
+        wire = Wire()
+        wire.initialize(line)
+        wires.append(wire)
     
     return wires
 
