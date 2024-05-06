@@ -48,7 +48,7 @@ def max_Obj(a, b):
     sigmaB = sigma(b)
     _rho = rho(a, b, sigmaA, sigmaB)
     _theta = theta(sigmaA, sigmaB, _rho)
-    x = 0  # placeholder for calc_x function
+    x = (a.a[0]-b.a[0])/theta  
     _bigphi = bigphi(x)
     _smallphi = smallphi(x)
     mean = maxmean(a, b, _bigphi, _theta, _smallphi)
@@ -70,7 +70,7 @@ def minObj(a, b):
     sigmaB = sigma(b)
     _rho = rho(a, b, sigmaA, sigmaB)
     _theta = theta(sigmaA, sigmaB, _rho)
-    x = 0  # placeholder for calc_x function
+    x = (a.a[0]-b.a[0])/theta 
     _bigphi = bigphi(x)
     _smallphi = smallphi(x)
     mean = minmean(a, b, _bigphi, _theta, _smallphi)
