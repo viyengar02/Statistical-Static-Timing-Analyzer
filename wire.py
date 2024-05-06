@@ -5,6 +5,7 @@ class Wire:
     a1 = 0
     a2 = 0
     a3 = 0
+
     def __init__(self):
         pass
 
@@ -16,6 +17,9 @@ class Wire:
         self.a2 = float(line[4])
         self.a3 = float(line[5])
 
-def print_wires(wires):
+def print_all_wires(wires):
     for wire in wires:
-        print(f"{wire.start_wire} {wire.stop_wire} {wire.a0} {wire.a1} {wire.a2} {wire.a3}")
+        print_wire(wire)
+
+def print_wire(wire):
+    print(f"{wire.start_wire} {wire.stop_wire} {wire.a0} {wire.a1} {wire.a2} {wire.a3}")

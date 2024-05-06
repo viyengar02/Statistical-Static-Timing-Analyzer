@@ -102,5 +102,18 @@ if __name__ == "__main__":
     wires = get_time_file("test.time")
     cell_library = get_cell_library("cell_library.time")
     primary_inputs, primary_outputs, gates = get_bench_file("test.bench")
-    print_gates(gates)
-    print_wires(wires)
+    #print_all_gates(gates)
+    for gate in gates:
+        input_wires = []
+        output_wires = []
+        for wire in wires:
+            if wire.start_wire == gate.label:
+                output_wires.append(wire)
+            if wire.stop_wire == gate.label:
+                input_wires.append(wire)
+        gate.input_wires = input_wires
+        gate.output_wires = output_wires
+
+    print_gate(gates[75])
+
+    #print_all_wires(wires)
