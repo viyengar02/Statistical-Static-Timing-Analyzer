@@ -1,9 +1,14 @@
 import cellMath
-
+from math import sqrt
 def runSSTA():
     return 0
 
-
+def add_delays_wire_gate( w, g):
+    w.a[0] = w.a[0]+g.op.a[0]
+    w.a[1] = w.a[1]+g.op.a[1]
+    w.a[2] = w.a[2]+g.op.a[2]
+    w.a[3] = sqrt((w.a[3])^2+(g.op.a[3])^2)
+   
 #gotta edit this one to make some fuckin sense
 def find_critical_path(output_wire):
     critical_path = []
@@ -29,7 +34,9 @@ def find_critical_path(output_wire):
         max_delay_wire = None
         max_delay = -float('inf')
         for input_gate in gate.inputs:
-            delay_wire = cellMath.max_Obj(input_gate, gate)
+            a = add_delays_wire_gate(input_gate.input_wire, input_gate)
+            b = add_delays_wire_gate(gate.input_wire, gate)
+            delay_wire = cellMath.max_Obj(a, b)
             if delay_wire.a[0] > max_delay:
                 max_delay = delay_wire.a[0]
                 max_delay_wire = delay_wire
