@@ -1,6 +1,7 @@
 import math
 from scipy.integrate import quad
 from scipy.special import erf, erfc
+from wire import *
 SMALLPHI_COEFF = 1 / math.sqrt(2 * math.pi)
 
 

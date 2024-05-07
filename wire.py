@@ -28,3 +28,8 @@ def get_output_gate(wire, gates):
     for gate in gates:
         if gate.label == wire.stop_wire:
             return gate
+        
+def get_input_gate(wire, gates):
+    for gate in gates:
+        if gate.label == wire.start_wire:
+            return gate

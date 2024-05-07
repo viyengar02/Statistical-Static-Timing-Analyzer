@@ -1,8 +1,10 @@
 import re
 from wire import *
 from gate import *
+from heuristics import *
+from op import *
 
-def get_bench_file(filename):
+def get_bench_file(filename,cell_library):
     with open(filename) as f:
         lines = [line.strip().split('\t') for line in f if not line.startswith('#') and line.strip()]
 
@@ -13,16 +15,22 @@ def get_bench_file(filename):
     for line in lines:
         line = line[0].replace(" ","")
         inputs = re.search('\((.*?)\)', line).group(1).split(",")
+        current_op = None
         if line.startswith('INPUT'):
-            primary_inputs.append(inputs)
+            primary_inputs.append(inputs[0])
         elif line.startswith("OUTPUT"):
-            primary_outputs.append(inputs)
+            primary_outputs.append(inputs[0])
         elif line.startswith('G'):
             split_line = line.split('=')
             label = split_line[0]
             # Replace the text within parentheses (and the parentheses) with an empty string
-            op = re.sub(r'\s*\(.*?\)', '', split_line[-1])
-            gates.append(Gate(label,op,inputs))
+            op_name = re.sub(r'\s*\(.*?\)', '', split_line[-1])
+            for cell in cell_library:
+                if cell.op == op_name:
+                    current_op = cell
+                    break
+
+            gates.append(Gate(label,current_op,inputs))
 
     return primary_inputs, primary_outputs, gates
 
@@ -64,12 +72,15 @@ def get_cell_library(filename):
             if line.startswith('GATE:'):
                 # If there's a current gate data being processed, save it before starting a new gate
                 if current_gate is not None:
+                    '''
                     gates.append({
                         'GATE': current_gate,
                         'OP': current_op,
                         'COST': current_cost,
                         'DELAY': current_delay
                     })
+                    '''
+                    gates.append(OP(current_gate,current_op,current_cost,current_delay))
 
                 # Parse the gate name from the line
                 current_gate = line.split(':')[1].strip()
@@ -89,19 +100,16 @@ def get_cell_library(filename):
 
         # Append the last gate data being processed
         if current_gate is not None:
-            gates.append({
-                'GATE': current_gate,
-                'OP': current_op,
-                'COST': current_cost,
-                'DELAY': current_delay
-            })
+            gates.append(OP(current_gate,current_op,current_cost,current_delay))
 
     return gates
 
 if __name__ == "__main__":
-    wires = get_time_file("test.time")
     cell_library = get_cell_library("cell_library.time")
-    primary_inputs, primary_outputs, gates = get_bench_file("test.bench")
+    print(cell_library)
+    wires = get_time_file("test.time")
+    primary_inputs, primary_outputs, gates = get_bench_file("test.bench",cell_library)
+    print(primary_inputs)
     #print_all_gates(gates)
     for gate in gates:
         input_wires = []
