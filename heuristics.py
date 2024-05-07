@@ -5,7 +5,7 @@ from gate import *
 def runSSTA():
     return 0
 
-def add_delays_wire_gate( w, g):
+def add_delays_wire_gate(w, g):
     w.a[0] = w.a[0]+g.op.a[0]
     w.a[1] = w.a[1]+g.op.a[1]
     w.a[2] = w.a[2]+g.op.a[2]
@@ -23,7 +23,7 @@ def find_critical_path(output_gate, gates):
     critical_path = []
     critical_path_cost = 0
     #init a blank wire obj
-    total_wire_delay = Wire
+    total_wire_delay = Wire()
     
     # Recursive function to traverse the circuit backward
     def traverse_circuit(curr_gate):

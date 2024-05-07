@@ -106,10 +106,10 @@ def get_cell_library(filename):
 
 if __name__ == "__main__":
     cell_library = get_cell_library("cell_library.time")
-    print(cell_library)
+    # print(cell_library)
     wires = get_time_file("test.time")
     primary_inputs, primary_outputs, gates = get_bench_file("test.bench",cell_library)
-    print(primary_inputs)
+    # print(primary_inputs)
     #print_all_gates(gates)
     for gate in gates:
         input_wires = []
@@ -122,9 +122,9 @@ if __name__ == "__main__":
         gate.input_wires = input_wires
         gate.output_wires = output_wires
 
-    print_gate(gates[75])
+    # print_gate(gates[75])
     for gate in gates:
-        if gate.label == primary_outputs[0][0]:
+        if gate.label == primary_outputs[0]:
             ind = gates.index(gate)
             break
     cp, cpc, twd = find_critical_path(gates[ind], gates)

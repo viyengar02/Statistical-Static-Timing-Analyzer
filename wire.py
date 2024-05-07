@@ -1,6 +1,7 @@
 class Wire:
     start_wire = ''
     stop_wire = ''
+    a = [0,0,0,0]
     a0 = 0
     a1 = 0
     a2 = 0
@@ -12,6 +13,7 @@ class Wire:
     def initialize(self, line):
         self.start_wire = line[0]
         self.stop_wire = line[1]
+        self.a = [line[2],line[3],line[4],line[5]]
         self.a0 = float(line[2])
         self.a1 = float(line[3])
         self.a2 = float(line[4])
