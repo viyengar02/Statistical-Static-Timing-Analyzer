@@ -115,5 +115,12 @@ if __name__ == "__main__":
         gate.output_wires = output_wires
 
     print_gate(gates[75])
-
+    for gate in gates:
+        if gate.label == primary_outputs[0][0]:
+            ind = gates.index(gate)
+            break
+    cp, cpc, twd = find_critical_path(gates[ind], gates)
+    print(cp)
+    print(cpc)
+    print(twd)
     #print_all_wires(wires)
