@@ -107,8 +107,8 @@ def get_cell_library(filename):
 if __name__ == "__main__":
     cell_library = get_cell_library("cell_library.time")
     # print(cell_library)
-    wires = get_time_file("test.time")
-    primary_inputs, primary_outputs, gates = get_bench_file("test.bench",cell_library)
+    wires = get_time_file("s27.time")
+    primary_inputs, primary_outputs, gates = get_bench_file("s27.bench",cell_library)
     # print(primary_inputs)
     #print_all_gates(gates)
     for gate in gates:
