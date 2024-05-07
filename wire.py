@@ -23,3 +23,8 @@ def print_all_wires(wires):
 
 def print_wire(wire):
     print(f"{wire.start_wire} {wire.stop_wire} {wire.a0} {wire.a1} {wire.a2} {wire.a3}")
+
+def get_output_gate(wire, gates):
+    for gate in gates:
+        if gate.label == wire.stop_wire:
+            return gate
