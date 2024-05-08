@@ -47,6 +47,7 @@ def find_critical_path(output_gate, gates):
         #init a blank gate object 
         max_delay_gate = create_empty_gate()
         for gate in gates:
+            # if not isinstance(gate, Gate): 
             for st in curr_gate.inputs:
                 if gate.label == st:
                     gate_inp_lst.append(gate)

@@ -72,14 +72,6 @@ def get_cell_library(filename):
             if line.startswith('GATE:'):
                 # If there's a current gate data being processed, save it before starting a new gate
                 if current_gate is not None:
-                    '''
-                    gates.append({
-                        'GATE': current_gate,
-                        'OP': current_op,
-                        'COST': current_cost,
-                        'DELAY': current_delay
-                    })
-                    '''
                     gates.append(OP(current_gate,current_op,current_cost,current_delay))
 
                 # Parse the gate name from the line
@@ -101,6 +93,9 @@ def get_cell_library(filename):
         # Append the last gate data being processed
         if current_gate is not None:
             gates.append(OP(current_gate,current_op,current_cost,current_delay))
+
+        # Add DFF gate
+        gates.append(OP("DFF","DFF",0,[0,0,0,0]))
 
     return gates
 
