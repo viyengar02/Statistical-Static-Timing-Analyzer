@@ -1,21 +1,22 @@
 import cellMath
 from math import sqrt
+
 from wire import *
 from gate import *
 def runSSTA():
     return 0
 
 def add_delays_wire_gate(w, g):
-    w.a[0] = w.a[0]+g.op.a[0]
-    w.a[1] = w.a[1]+g.op.a[1]
-    w.a[2] = w.a[2]+g.op.a[2]
-    w.a[3] = sqrt((w.a[3])^2+(g.op.a[3])^2)
+    w.a0 = w.a0+g.op.a0
+    w.a1 = w.a1+g.op.a1
+    w.a2 = w.a2+g.op.a2
+    w.a3 = sqrt((w.a3)**2+(g.op.a3)**2)
     return w
 def add_delay_w_w(w1, w2):
-    w1.a[0] = w1.a[0]+w2.a[0]
-    w1.a[1] = w1.a[1]+w2.a[1]
-    w1.a[2] = w1.a[2]+w2.a[2]
-    w1.a[3] = sqrt((w1.a[3])^2+(w2.a[3])^2)
+    w1.a0 = w1.a0+w2.a0
+    w1.a1 = w1.a1+w2.a1
+    w1.a2 = w1.a2+w2.a2
+    w1.a3 = sqrt((w1.a3)**2+(w2.a3)**2)
 
 
 #gotta edit this one to make some fuckin sense
@@ -53,14 +54,14 @@ def find_critical_path(output_gate, gates):
             if input_gate.op.a[0] > max_delay_gate.op.a[0]:
                 max_delay_gate = input_gate
 
-            a = add_delays_wire_gate(input_gate.input_wires, input_gate)
-            b = add_delays_wire_gate(curr_gate.input_wires, curr_gate)
+            a = add_delays_wire_gate(input_gate.input_wires[0], input_gate)
+            b = add_delays_wire_gate(curr_gate.input_wires[0], curr_gate)
             delay_wire = cellMath.max_Obj(a, b)
             
         
         # Recursively traverse the circuit with the input wire
         add_delay_w_w(total_wire_delay, delay_wire)
-        traverse_circuit(max_delay_wire)
+        traverse_circuit(max_delay_gate)
     
     # Start traversing the circuit from the output gate
     traverse_circuit(output_gate)
