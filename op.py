@@ -8,3 +8,5 @@ class OP:
         self.a1 = delay[1]
         self.a2 = delay[2]
         self.a3 = delay[3]
+    def create_empty_op(gate):
+        return OP(gate, 'DFF', 0, [0,0,0,0])
