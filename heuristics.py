@@ -29,7 +29,7 @@ def find_critical_path(output_gate, gates):
     # Recursive function to traverse the circuit backward
     def traverse_circuit(curr_gate):
         nonlocal critical_path, critical_path_cost
-        
+        delay_wire = Wire()
         # Find the gate connected to this wire
         
         # Add the gate to the critical path
@@ -41,8 +41,6 @@ def find_critical_path(output_gate, gates):
             return
         
         # Calculate the delay with each input gate and choose the max delay
-        max_delay_wire = None
-        max_delay = -float('inf')
         gate_inp_lst = []
         # delay_wire = Wire()
         #init a blank gate object 

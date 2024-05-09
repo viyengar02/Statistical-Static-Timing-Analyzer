@@ -23,7 +23,7 @@ def get_bench_file(filename,cell_library):
             primary_inputs.append(inputs[0])
         elif line.startswith("OUTPUT"):
             primary_outputs.append(inputs[0])
-        elif line.startswith('G'):
+        elif line.startswith('g'):
             split_line = line.split('=')
             label = split_line[0]
             # Replace the text within parentheses (and the parentheses) with an empty string
@@ -132,6 +132,7 @@ def gather_files_by_extension(base_folder):
     return time_files, bench_files, time_base_names
 
 def run_ckt(ckt_name, primary_inputs, primary_outputs, gates):
+    g_copy = gates
     for gate in gates:
         input_wires = []
         output_wires = []
@@ -145,9 +146,9 @@ def run_ckt(ckt_name, primary_inputs, primary_outputs, gates):
 
     # print_gate(gates[75])
     ind = 0
-    for gate in gates:
+    for gate in g_copy:
         if gate.label == primary_outputs[0]:
-            ind = gates.index(gate)
+            ind = g_copy.index(gate)
             break
     start_time = time.time()
     critical_path, critical_path_cost, total_wire_delay = find_critical_path(gates[ind], gates)
