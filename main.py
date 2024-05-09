@@ -106,6 +106,7 @@ def gather_files_by_extension(base_folder):
     # Lists to hold files with specific extensions
     time_files = []
     bench_files = []
+    time_base_names = []
 
     # Iterate through the directory tree starting from the base folder
     for root, dirs, files in os.walk(base_folder):
@@ -116,14 +117,21 @@ def gather_files_by_extension(base_folder):
             
             # Check the file extension and add the file to the appropriate list
             if file.endswith('.time'):
+                # Add the full file path to the time files list
                 time_files.append(file_path)
+                
+                # Extract the base file name without extension or path and add to the list
+                base_name = os.path.splitext(file)[0]
+                time_base_names.append(base_name)
+                
             elif file.endswith('.bench'):
+                # Add the full file path to the bench files list
                 bench_files.append(file_path)
     
-    # Return the lists of time and bench files
-    return time_files, bench_files
+    # Return the lists of time files, bench files, and time base names
+    return time_files, bench_files, time_base_names
 
-def run_ckt(primary_inputs, primary_outputs, gates):
+def run_ckt(ckt_name, primary_inputs, primary_outputs, gates):
     for gate in gates:
         input_wires = []
         output_wires = []
@@ -157,9 +165,10 @@ def run_ckt(primary_inputs, primary_outputs, gates):
 if __name__ == "__main__":
     cell_library = get_cell_library("cell_library.time")
 
-    time_files, bench_files = gather_files_by_extension('BENCHMARKS')   
+    time_files, bench_files, ckt_names = gather_files_by_extension('BENCHMARKS')   
 
     data = []
+    print(ckt_names)
     
     for i in range(len(time_files)):
         wires = get_time_file(time_files[i])
@@ -167,7 +176,7 @@ if __name__ == "__main__":
 
     #wires = get_time_file("s27.time")
     #primary_inputs, primary_outputs, gates = get_bench_file("s27.bench",cell_library)
-        data.append(run_ckt(primary_inputs,primary_outputs,gates))
+        data.append(run_ckt(ckt_names[i],primary_inputs,primary_outputs,gates))
 
     df = pd.DataFrame(data, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time"])
     df.to_csv('results.csv', index = True) 
