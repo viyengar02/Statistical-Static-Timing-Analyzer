@@ -34,7 +34,7 @@ def find_critical_path(output_gate, gates):
         
         # Add the gate to the critical path
         critical_path.insert(0,curr_gate)
-        critical_path_cost += curr_gate.cost
+        critical_path_cost += curr_gate.op.cost
         
         # Base case: If the gate has no inputs, return
         if not curr_gate.inputs:
