@@ -1,10 +1,11 @@
 import re
+import pandas as pd
+import time
+import os
+from op import *
 from wire import *
 from gate import *
 from heuristics import *
-import pandas as pd
-import time
-from op import *
 
 def get_bench_file(filename,cell_library):
     with open(filename) as f:
@@ -101,13 +102,28 @@ def get_cell_library(filename):
 
     return gates
 
-if __name__ == "__main__":
-    cell_library = get_cell_library("cell_library.time")
-    # print(cell_library)
-    wires = get_time_file("s27.time")
-    primary_inputs, primary_outputs, gates = get_bench_file("s27.bench",cell_library)
-    # print(primary_inputs)
-    #print_all_gates(gates)
+def gather_files_by_extension(base_folder):
+    # Lists to hold files with specific extensions
+    time_files = []
+    bench_files = []
+
+    # Iterate through the directory tree starting from the base folder
+    for root, dirs, files in os.walk(base_folder):
+        # Loop through each file in the current directory
+        for file in files:
+            # Construct the full file path
+            file_path = os.path.join(root, file)
+            
+            # Check the file extension and add the file to the appropriate list
+            if file.endswith('.time'):
+                time_files.append(file_path)
+            elif file.endswith('.bench'):
+                bench_files.append(file_path)
+    
+    # Return the lists of time and bench files
+    return time_files, bench_files
+
+def run_ckt(primary_inputs, primary_outputs, gates):
     for gate in gates:
         input_wires = []
         output_wires = []
@@ -120,6 +136,7 @@ if __name__ == "__main__":
         gate.output_wires = output_wires
 
     # print_gate(gates[75])
+    ind = 0
     for gate in gates:
         if gate.label == primary_outputs[0]:
             ind = gates.index(gate)
@@ -133,10 +150,25 @@ if __name__ == "__main__":
         critical_path_string += gate.label + "->"
     critical_path_string += "Output"
 
-    print_wire(total_wire_delay)
+    data = ["Circuit", critical_path_string, [total_wire_delay.a0,total_wire_delay.a1,total_wire_delay.a2,total_wire_delay.a3], critical_path_cost, run_time]
+    return data
 
-    data = [["Circuit", critical_path_string, [total_wire_delay.a0,total_wire_delay.a1,total_wire_delay.a2,total_wire_delay.a3], critical_path_cost, run_time]]
+
+if __name__ == "__main__":
+    cell_library = get_cell_library("cell_library.time")
+
+    time_files, bench_files = gather_files_by_extension('BENCHMARKS')   
+
+    data = []
+    
+    for i in range(len(time_files)):
+        wires = get_time_file(time_files[i])
+        primary_inputs, primary_outputs, gates = get_bench_file(bench_files[i],cell_library)
+
+    #wires = get_time_file("s27.time")
+    #primary_inputs, primary_outputs, gates = get_bench_file("s27.bench",cell_library)
+        data.append(run_ckt(primary_inputs,primary_outputs,gates))
 
     df = pd.DataFrame(data, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time"])
-    print(df)
+    df.to_csv('results.csv', index = True) 
     

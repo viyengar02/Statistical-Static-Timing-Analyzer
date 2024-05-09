@@ -44,6 +44,7 @@ def find_critical_path(output_gate, gates):
         max_delay_wire = None
         max_delay = -float('inf')
         gate_inp_lst = []
+        # delay_wire = Wire()
         #init a blank gate object 
         max_delay_gate = create_empty_gate()
         for gate in gates:
