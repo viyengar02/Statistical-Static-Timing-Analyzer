@@ -2,6 +2,8 @@ import re
 from wire import *
 from gate import *
 from heuristics import *
+import pandas as pd
+import time
 from op import *
 
 def get_bench_file(filename,cell_library):
@@ -122,8 +124,19 @@ if __name__ == "__main__":
         if gate.label == primary_outputs[0]:
             ind = gates.index(gate)
             break
-    cp, cpc, twd = find_critical_path(gates[ind], gates)
-    print(cp)
-    print(cpc)
-    print(twd)
-    #print_all_wires(wires)
+    start_time = time.time()
+    critical_path, critical_path_cost, total_wire_delay = find_critical_path(gates[ind], gates)
+    run_time = time.time() - start_time
+    critical_path_string = "Input->"
+    for gate in critical_path:
+        if gate.label == "": continue
+        critical_path_string += gate.label + "->"
+    critical_path_string += "Output"
+
+    print_wire(total_wire_delay)
+
+    data = [["Circuit", critical_path_string, [total_wire_delay.a0,total_wire_delay.a1,total_wire_delay.a2,total_wire_delay.a3], critical_path_cost, run_time]]
+
+    df = pd.DataFrame(data, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time"])
+    print(df)
+    
