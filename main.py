@@ -168,7 +168,6 @@ if __name__ == "__main__":
     time_files, bench_files, ckt_names = gather_files_by_extension('BENCHMARKS')   
 
     data = []
-    print(ckt_names)
     
     for i in range(len(time_files)):
         wires = get_time_file(time_files[i])
@@ -176,6 +175,7 @@ if __name__ == "__main__":
 
     #wires = get_time_file("s27.time")
     #primary_inputs, primary_outputs, gates = get_bench_file("s27.bench",cell_library)
+        print(ckt_names[i])
         data.append(run_ckt(ckt_names[i],primary_inputs,primary_outputs,gates))
 
     df = pd.DataFrame(data, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time"])
