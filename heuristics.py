@@ -53,7 +53,8 @@ def find_critical_path(output_gate, gates):
         for input_gate in gate_inp_lst:
             if input_gate.op.a[0] > max_delay_gate.op.a[0]:
                 max_delay_gate = input_gate
-
+            if len(input_gate.input_wires) == 0: input_gate.input_wires.append(Wire())
+            if len(curr_gate.input_wires) == 0: curr_gate.input_wires.append(Wire())
             a = add_delays_wire_gate(input_gate.input_wires[0], input_gate)
             b = add_delays_wire_gate(curr_gate.input_wires[0], curr_gate)
             delay_wire = cellMath.max_Obj(a, b)

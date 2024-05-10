@@ -23,7 +23,7 @@ def get_bench_file(filename,cell_library):
             primary_inputs.append(inputs[0])
         elif line.startswith("OUTPUT"):
             primary_outputs.append(inputs[0])
-        elif line.startswith('g'):
+        else:
             split_line = line.split('=')
             label = split_line[0]
             # Replace the text within parentheses (and the parentheses) with an empty string
@@ -150,16 +150,16 @@ def run_ckt(ckt_name, primary_inputs, primary_outputs, gates):
         if gate.label == primary_outputs[0]:
             ind = g_copy.index(gate)
             break
-    start_time = time.time()
+    start_time = time.perf_counter()
     critical_path, critical_path_cost, total_wire_delay = find_critical_path(gates[ind], gates)
-    run_time = time.time() - start_time
+    end_time = time.perf_counter()
     critical_path_string = "Input->"
     for gate in critical_path:
         if gate.label == "": continue
         critical_path_string += gate.label + "->"
     critical_path_string += "Output"
 
-    data = ["Circuit", critical_path_string, [total_wire_delay.a0,total_wire_delay.a1,total_wire_delay.a2,total_wire_delay.a3], critical_path_cost, run_time]
+    data = [ckt_name, critical_path_string, [total_wire_delay.a0,total_wire_delay.a1,total_wire_delay.a2,total_wire_delay.a3], critical_path_cost, end_time-start_time]
     return data
 
 
@@ -169,16 +169,18 @@ if __name__ == "__main__":
     time_files, bench_files, ckt_names = gather_files_by_extension('BENCHMARKS')   
 
     data = []
+
+    i = 0
     
     for i in range(len(time_files)):
         wires = get_time_file(time_files[i])
         primary_inputs, primary_outputs, gates = get_bench_file(bench_files[i],cell_library)
-
-    #wires = get_time_file("s27.time")
-    #primary_inputs, primary_outputs, gates = get_bench_file("s27.bench",cell_library)
-        print(ckt_names[i])
+        print(ckt_names[i], time_files[i], bench_files[i])
+        #wires = get_time_file("s27.time")
+        #primary_inputs, primary_outputs, gates = get_bench_file("s27.bench",cell_library)
+    
         data.append(run_ckt(ckt_names[i],primary_inputs,primary_outputs,gates))
 
     df = pd.DataFrame(data, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time"])
-    df.to_csv('results.csv', index = True) 
+    df.to_csv('results.csv', index = False) 
     
