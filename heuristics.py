@@ -54,7 +54,7 @@ def find_critical_path(output_gate, gates):
         #init a blank gate object 
         max_delay_gate = create_empty_gate()
 
-        gate_inp_lst = set_inputs(curr_gate)
+        gate_inp_lst = set_inputs(curr_gate, gates)
 
         for input_gate in gate_inp_lst:
             if input_gate.op.op == "INPUT":
@@ -66,7 +66,7 @@ def find_critical_path(output_gate, gates):
             if len(max_delay_gate.input_wires) == 0: max_delay_gate.input_wires.append(Wire())
             if len(curr_gate.input_wires) == 0: curr_gate.input_wires.append(Wire())
             
-            gate_inp_lst = set_inputs(max_delay_gate)
+            gate_inp_lst = set_inputs(max_delay_gate, gates)
             second_tier_delay_gate = create_empty_gate()
             for input in gate_inp_lst:
                 if input.op.a[0]>second_tier_delay_gate.op.a[0]:
