@@ -6,6 +6,7 @@ class Wire:
     a1 = 0
     a2 = 0
     a3 = 0
+    total_a = 0
 
     def __init__(self):
         pass
@@ -13,12 +14,12 @@ class Wire:
     def initialize(self, line):
         self.start_wire = line[0]
         self.stop_wire = line[1]
-        self.a = [line[2],line[3],line[4],line[5]]
+        self.a = [float(line[2]),float(line[3]),float(line[4]),float(line[5])]
         self.a0 = float(line[2])
         self.a1 = float(line[3])
         self.a2 = float(line[4])
         self.a3 = float(line[5])
-
+        self.total_a = self.a0 + self.a1 + self.a2 + self.a3
 def print_all_wires(wires):
     for wire in wires:
         print_wire(wire)

@@ -7,6 +7,20 @@ from wire import *
 from gate import *
 from heuristics import *
 
+def seek_cell_gate(cell_library,op_name):
+    current_gate = None
+    for cell in cell_library:
+        if cell.gate == op_name:
+            current_gate = cell
+            return current_gate
+        
+def seek_cell_op(cell_library,op_name):
+    current_op = None
+    for cell in cell_library:
+        if cell.op == op_name:
+            current_op = cell
+            return current_op
+
 def get_bench_file(filename,cell_library):
     with open(filename) as f:
         lines = [line.strip().split('\t') for line in f if not line.startswith('#') and line.strip()]
@@ -21,6 +35,8 @@ def get_bench_file(filename,cell_library):
         current_op = None
         if line.startswith('INPUT'):
             primary_inputs.append(inputs[0])
+            current_op = seek_cell_op(cell_library,"INPUT")
+            gates.append(Gate(inputs[0],current_op,[]))
         elif line.startswith("OUTPUT"):
             primary_outputs.append(inputs[0])
         else:
@@ -28,11 +44,9 @@ def get_bench_file(filename,cell_library):
             label = split_line[0]
             # Replace the text within parentheses (and the parentheses) with an empty string
             op_name = re.sub(r'\s*\(.*?\)', '', split_line[-1])
-            for cell in cell_library:
-                if cell.op == op_name:
-                    current_op = cell
-                    break
-
+            current_op = seek_cell_gate(cell_library,op_name + str(len(inputs)))
+            if current_op == None:
+                current_op = seek_cell_op(cell_library,op_name)
             gates.append(Gate(label,current_op,inputs))
 
     return primary_inputs, primary_outputs, gates
@@ -97,8 +111,9 @@ def get_cell_library(filename):
         if current_gate is not None:
             gates.append(OP(current_gate,current_op,current_cost,current_delay))
 
-        # Add DFF gate
+        # Add DFF & Input gate
         gates.append(OP("DFF","DFF",0,[0,0,0,0]))
+        gates.append(OP("INPUT","INPUT",0,[0,0,0,0]))
 
     return gates
 
@@ -132,6 +147,7 @@ def gather_files_by_extension(base_folder):
     return time_files, bench_files, time_base_names
 
 def run_ckt(ckt_name, primary_inputs, primary_outputs, gates):
+    start_time = time.perf_counter()
     g_copy = gates
     for gate in gates:
         input_wires = []
@@ -144,22 +160,22 @@ def run_ckt(ckt_name, primary_inputs, primary_outputs, gates):
         gate.input_wires = input_wires
         gate.output_wires = output_wires
 
-    # print_gate(gates[75])
     ind = 0
     for gate in g_copy:
         if gate.label == primary_outputs[0]:
             ind = g_copy.index(gate)
             break
-    start_time = time.perf_counter()
-    critical_path, critical_path_cost, total_wire_delay = find_critical_path(gates[ind], gates)
-    end_time = time.perf_counter()
-    critical_path_string = "Input->"
-    for gate in critical_path:
-        if gate.label == "": continue
-        critical_path_string += gate.label + "->"
-    critical_path_string += "Output"
 
-    data = [ckt_name, critical_path_string, [total_wire_delay.a0,total_wire_delay.a1,total_wire_delay.a2,total_wire_delay.a3], critical_path_cost, end_time-start_time]
+    
+    critical_path, critical_path_cost, total_wire_delay = find_critical_path(gates[ind], gates)
+    
+    critical_path_string = ""
+    for gate in critical_path:
+        critical_path_string += gate.label + "->"
+    critical_path_string = critical_path_string[0:-2]
+    end_time = time.perf_counter()
+
+    data = [ckt_name, critical_path_string, [total_wire_delay.a0,total_wire_delay.a1,total_wire_delay.a2,total_wire_delay.a3], critical_path_cost, (end_time-start_time)*1000]
     return data
 
 
@@ -172,15 +188,13 @@ if __name__ == "__main__":
 
     i = 0
     
-    for i in range(len(time_files)):
+    for i in range(9,13):
         wires = get_time_file(time_files[i])
         primary_inputs, primary_outputs, gates = get_bench_file(bench_files[i],cell_library)
         print(ckt_names[i], time_files[i], bench_files[i])
-        #wires = get_time_file("s27.time")
-        #primary_inputs, primary_outputs, gates = get_bench_file("s27.bench",cell_library)
     
         data.append(run_ckt(ckt_names[i],primary_inputs,primary_outputs,gates))
 
-    df = pd.DataFrame(data, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time"])
+    df = pd.DataFrame(data, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time (ms)"])
     df.to_csv('results.csv', index = False) 
     

@@ -45,16 +45,24 @@ def find_critical_path(output_gate, gates):
         # delay_wire = Wire()
         #init a blank gate object 
         max_delay_gate = create_empty_gate()
+        
         for gate in gates:
             # if not isinstance(gate, Gate): 
             for st in curr_gate.inputs:
                 if gate.label == st:
                     gate_inp_lst.append(gate)
+
         for input_gate in gate_inp_lst:
+            if input_gate.op.op == "INPUT":
+                max_delay_gate = input_gate
+                break
             if input_gate.op.a[0] > max_delay_gate.op.a[0]:
                 max_delay_gate = input_gate
-            if len(input_gate.input_wires) == 0: input_gate.input_wires.append(Wire())
-            if len(curr_gate.input_wires) == 0: curr_gate.input_wires.append(Wire())
+
+            #FIXME: these two lines of code causing incorrect calculations
+            if len(input_gate.input_wires) == 0: continue #input_gate.input_wires.append(Wire())
+            if len(curr_gate.input_wires) == 0: continue #curr_gate.input_wires.append(Wire())
+            
             a = add_delays_wire_gate(input_gate.input_wires[0], input_gate)
             b = add_delays_wire_gate(curr_gate.input_wires[0], curr_gate)
             delay_wire = cellMath.max_Obj(a, b)
