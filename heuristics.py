@@ -69,7 +69,7 @@ def find_critical_path(output_gate, gates):
             gate_inp_lst = set_inputs(max_delay_gate, gates)
             second_tier_delay_gate = create_empty_gate()
             for input in gate_inp_lst:
-                if input.op.a[0]>second_tier_delay_gate.op.a[0]:
+                if input.op.a[0]>=second_tier_delay_gate.op.a[0]:
                     second_tier_delay_gate = input
 
             a = add_delays_wire_gate(second_tier_delay_gate.output_wires[0], max_delay_gate)
