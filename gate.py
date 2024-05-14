@@ -21,4 +21,4 @@ def print_gate(gate):
     print(f"\tOUTPUT WIRES: {len(gate.output_wires)}\n")
 
 def create_empty_gate():
-    return Gate('empty',OP('','',0,[0,0,0,0]),[])
+    return Gate('empty',OP('','',0,[-0.1,-0.1,-0.1,-0.1]),[])

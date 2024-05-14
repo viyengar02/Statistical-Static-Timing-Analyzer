@@ -114,7 +114,6 @@ def get_cell_library(filename):
         # Add DFF & Input gate
         gates.append(OP("DFF","DFF",0,[0,0,0,0]))
         gates.append(OP("INPUT","INPUT",0,[0,0,0,0]))
-
     return gates
 
 def gather_files_by_extension(base_folder):
@@ -146,7 +145,7 @@ def gather_files_by_extension(base_folder):
     # Return the lists of time files, bench files, and time base names
     return time_files, bench_files, time_base_names
 
-def run_ckt(ckt_name, primary_inputs, primary_outputs, gates):
+def run_ckt(ckt_name, primary_inputs, primary_outputs, gates, wires):
     start_time = time.perf_counter()
     g_copy = gates
     for gate in gates:
@@ -159,7 +158,7 @@ def run_ckt(ckt_name, primary_inputs, primary_outputs, gates):
                 input_wires.append(wire)
         gate.input_wires = input_wires
         gate.output_wires = output_wires
-
+    #print_gate(gates[5])
     ind = 0
     for gate in g_copy:
         if gate.label == primary_outputs[0]:
@@ -188,12 +187,12 @@ if __name__ == "__main__":
 
     i = 0
     
-    for i in range(9,13):
+    for i in [9, 11, 12]:
         wires = get_time_file(time_files[i])
         primary_inputs, primary_outputs, gates = get_bench_file(bench_files[i],cell_library)
         print(ckt_names[i], time_files[i], bench_files[i])
     
-        data.append(run_ckt(ckt_names[i],primary_inputs,primary_outputs,gates))
+        data.append(run_ckt(ckt_names[i],primary_inputs,primary_outputs,gates,wires))
 
     df = pd.DataFrame(data, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time (ms)"])
     df.to_csv('results.csv', index = False) 
