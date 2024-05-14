@@ -18,6 +18,14 @@ def add_delay_w_w(w1, w2):
     w1.a2 = w1.a2+w2.a2
     w1.a3 = sqrt((w1.a3)**2+(w2.a3)**2)
 
+def set_inputs(curr_gate, gates):
+    gate_inp_lst = []
+    for gate in gates:
+            # if not isinstance(gate, Gate): 
+            for st in curr_gate.inputs:
+                if gate.label == st:
+                    gate_inp_lst.append(gate)
+    return gate_inp_lst
 
 #gotta edit this one to make some fuckin sense
 def find_critical_path(output_gate, gates):
@@ -45,12 +53,8 @@ def find_critical_path(output_gate, gates):
         # delay_wire = Wire()
         #init a blank gate object 
         max_delay_gate = create_empty_gate()
-        
-        for gate in gates:
-            # if not isinstance(gate, Gate): 
-            for st in curr_gate.inputs:
-                if gate.label == st:
-                    gate_inp_lst.append(gate)
+
+        gate_inp_lst = set_inputs(curr_gate)
 
         for input_gate in gate_inp_lst:
             if input_gate.op.op == "INPUT":
@@ -58,13 +62,19 @@ def find_critical_path(output_gate, gates):
                 break
             if input_gate.op.a[0] > max_delay_gate.op.a[0]:
                 max_delay_gate = input_gate
-
-            #FIXME: these two lines of code causing incorrect calculations
-            if len(input_gate.input_wires) == 0: continue #input_gate.input_wires.append(Wire())
-            if len(curr_gate.input_wires) == 0: continue #curr_gate.input_wires.append(Wire())
+                
+            if len(max_delay_gate.input_wires) == 0: max_delay_gate.input_wires.append(Wire())
+            if len(curr_gate.input_wires) == 0: curr_gate.input_wires.append(Wire())
             
-            a = add_delays_wire_gate(input_gate.input_wires[0], input_gate)
-            b = add_delays_wire_gate(curr_gate.input_wires[0], curr_gate)
+            gate_inp_lst = set_inputs(max_delay_gate)
+            second_tier_delay_gate = create_empty_gate()
+            for input in gate_inp_lst:
+                if input.op.a[0]>second_tier_delay_gate.op.a[0]:
+                    second_tier_delay_gate = input
+
+            a = add_delays_wire_gate(second_tier_delay_gate.output_wires[0], max_delay_gate)
+            b = add_delays_wire_gate(max_delay_gate.output_wires[0], curr_gate)
+            
             delay_wire = cellMath.max_Obj(a, b)
             
         
