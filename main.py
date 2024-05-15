@@ -7,19 +7,13 @@ from wire import *
 from gate import *
 from heuristics import *
 
-def seek_cell_gate(cell_library,op_name):
-    current_gate = None
-    for cell in cell_library:
-        if cell.gate == op_name:
-            current_gate = cell
-            return current_gate
         
 def seek_cell_op(cell_library,op_name):
-    current_op = None
+    current_op = []
     for cell in cell_library:
         if cell.op == op_name:
-            current_op = cell
-            return current_op
+            current_op.append(cell)
+    return current_op
 
 def get_bench_file(filename,cell_library):
     with open(filename) as f:
@@ -36,7 +30,7 @@ def get_bench_file(filename,cell_library):
         if line.startswith('INPUT'):
             primary_inputs.append(inputs[0])
             current_op = seek_cell_op(cell_library,"INPUT")
-            gates.append(Gate(inputs[0],current_op,[]))
+            gates.append(Gate(inputs[0],current_op[0],[]))
         elif line.startswith("OUTPUT"):
             primary_outputs.append(inputs[0])
         else:
@@ -44,10 +38,13 @@ def get_bench_file(filename,cell_library):
             label = split_line[0]
             # Replace the text within parentheses (and the parentheses) with an empty string
             op_name = re.sub(r'\s*\(.*?\)', '', split_line[-1])
-            current_op = seek_cell_gate(cell_library,op_name + str(len(inputs)))
+            current_op = seek_cell_op(cell_library,op_name)
             if current_op == None:
                 current_op = seek_cell_op(cell_library,op_name)
-            gates.append(Gate(label,current_op,inputs))
+            gates.append(Gate(label,current_op[0],inputs))
+            
+            for i in range(1,len(current_op)):
+                exec(f"gates[-1].op{i+1} = current_op[{i}]")
 
     return primary_inputs, primary_outputs, gates
 
@@ -66,7 +63,7 @@ def get_time_file(filename):
 
 def get_cell_library(filename):
     # Create a list to hold the data for each gate
-    gates = []
+    gates_types = []
 
     # Open the file
     with open(filename, 'r') as file:
@@ -89,7 +86,7 @@ def get_cell_library(filename):
             if line.startswith('GATE:'):
                 # If there's a current gate data being processed, save it before starting a new gate
                 if current_gate is not None:
-                    gates.append(OP(current_gate,current_op,current_cost,current_delay))
+                    gates_types.append(OP(current_gate,current_op,current_cost,current_delay))
 
                 # Parse the gate name from the line
                 current_gate = line.split(':')[1].strip()
@@ -109,13 +106,13 @@ def get_cell_library(filename):
 
         # Append the last gate data being processed
         if current_gate is not None:
-            gates.append(OP(current_gate,current_op,current_cost,current_delay))
+            gates_types.append(OP(current_gate,current_op,current_cost,current_delay))
 
         # Add DFF & Input gate
-        gates.append(OP("DFF","DFF",0,[0,0,0,0]))
-        gates.append(OP("INPUT","INPUT",0,[0,0,0,0]))
+        gates_types.append(OP("DFF","DFF",0,[0,0,0,0]))
+        gates_types.append(OP("INPUT","INPUT",0,[0,0,0,0]))
 
-    return gates
+    return gates_types
 
 def gather_files_by_extension(base_folder):
     # Lists to hold files with specific extensions
@@ -191,8 +188,9 @@ if __name__ == "__main__":
     for i in [9,11,12]:
         wires = get_time_file(time_files[i])
         primary_inputs, primary_outputs, gates = get_bench_file(bench_files[i],cell_library)
-        print(ckt_names[i], time_files[i], bench_files[i])
-    
+        print(ckt_names[i])
+        f = 10
+        print(gates[f].op.gate)
         data.append(run_ckt(ckt_names[i],primary_inputs,primary_outputs,gates,wires))
 
     df = pd.DataFrame(data, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time (ms)"])

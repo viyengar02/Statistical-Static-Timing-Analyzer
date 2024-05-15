@@ -9,6 +9,8 @@ class Gate:
         self.inputs = inputs
         self.input_wires = []
         self.output_wires = []
+        self.op2 = None
+        self.op3 = None
 
 def print_all_gates(gates):
     for gate in gates:
