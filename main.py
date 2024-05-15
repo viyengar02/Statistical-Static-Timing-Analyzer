@@ -179,7 +179,7 @@ def run_ckt(ckt_name, primary_inputs, primary_outputs, gates, wires):
     return data
 
 
-""" if __name__ == "__main__":
+if __name__ == "__main__":
     cell_library = get_cell_library("cell_library.time")
 
     time_files, bench_files, ckt_names = gather_files_by_extension('BENCHMARKS')   
@@ -188,16 +188,24 @@ def run_ckt(ckt_name, primary_inputs, primary_outputs, gates, wires):
 
     i = 0
     
-    for i in range(9,13):
+    for i in [9,11,12]:
         wires = get_time_file(time_files[i])
         primary_inputs, primary_outputs, gates = get_bench_file(bench_files[i],cell_library)
         print(ckt_names[i], time_files[i], bench_files[i])
     
-        data.append(run_ckt(ckt_names[i],primary_inputs,primary_outputs,gates))
+        data.append(run_ckt(ckt_names[i],primary_inputs,primary_outputs,gates,wires))
 
     df = pd.DataFrame(data, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time (ms)"])
-    df.to_csv('results.csv', index = False)  """
+    df.to_csv('results.csv', index = False)  
 
+    wires = get_time_file("s27.time")
+    primary_inputs, primary_outputs, gates = get_bench_file("s27.bench",cell_library)
+    data.append(run_ckt("s27",primary_inputs,primary_outputs,gates, wires))
+    df = pd.DataFrame(data, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time (ms)"])
+    df.to_csv('results.csv', index = False)
+
+
+""" 
 if __name__ == "__main__":
     cell_library = get_cell_library("cell_library.time")
     data = []
@@ -207,3 +215,5 @@ if __name__ == "__main__":
     data.append(run_ckt("s27",primary_inputs,primary_outputs,gates, wires))
     df = pd.DataFrame(data, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time (ms)"])
     df.to_csv('results.csv', index = False)
+
+    """
