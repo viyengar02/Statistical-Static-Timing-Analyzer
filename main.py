@@ -6,7 +6,7 @@ from op import *
 from wire import *
 from gate import *
 from heuristics import *
-
+from optHeuristics import *
         
 def seek_cell_op(cell_library,op_name):
     current_op = []
@@ -163,8 +163,12 @@ def run_ckt(ckt_name, primary_inputs, primary_outputs, gates, wires):
             ind = g_copy.index(gate)
             break
 
-    
+    initial_temperature = 1000
+    cooling_rate = 0.95
+    threshold = 0.001
     critical_path, critical_path_cost, total_wire_delay = find_critical_path(gates[ind], gates)
+    #critical_path, critical_path_cost, total_wire_delay = simulated_annealing(gates[ind], gates, initial_temperature, cooling_rate, threshold)
+
     
     critical_path_string = ""
     for gate in critical_path:

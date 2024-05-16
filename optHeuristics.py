@@ -127,11 +127,3 @@ def simulated_annealing(output_gate, gates, initial_temperature, cooling_rate, t
 
     return best_path, best_path_cost, best_total_delay
 
-# Example usage of the simulated_annealing function
-if __name__ == "__main__":
-    initial_temperature = 1000
-    cooling_rate = 0.95
-    threshold = 0.001
-
-    best_path, best_path_cost, best_total_delay = simulated_annealing(output_gate, gates, initial_temperature, cooling_rate, threshold)
-
