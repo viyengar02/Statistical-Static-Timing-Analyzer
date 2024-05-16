@@ -35,7 +35,7 @@ def traverse_circuit(curr_gate, gates, critical_path, critical_path_cost, total_
     
     # Base case: If the gate has no inputs, return
     if not curr_gate.inputs:
-        return
+        return critical_path_cost
     
     # Calculate the delay with each input gate and choose the max delay
     gate_inp_lst = set_inputs(curr_gate, gates)
@@ -66,13 +66,13 @@ def traverse_circuit(curr_gate, gates, critical_path, critical_path_cost, total_
         delay_wire = cellMath.max_Obj(a, b)
         
     add_delay_w_w(total_wire_delay, delay_wire)
-    traverse_circuit(max_delay_gate, gates, critical_path, critical_path_cost, total_wire_delay)
+    return traverse_circuit(max_delay_gate, gates, critical_path, critical_path_cost, total_wire_delay)
 
 def find_critical_path(output_gate, gates):
     critical_path = []
     critical_path_cost = 0
     total_wire_delay = Wire()
-    traverse_circuit(output_gate, gates, critical_path, critical_path_cost, total_wire_delay)
+    critical_path_cost = traverse_circuit(output_gate, gates, critical_path, critical_path_cost, total_wire_delay)
     return critical_path, critical_path_cost, total_wire_delay
 
 def acceptance_probability(delta_cost, temperature):
