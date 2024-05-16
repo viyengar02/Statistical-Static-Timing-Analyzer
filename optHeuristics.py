@@ -99,8 +99,9 @@ def simulated_annealing(output_gate, gates, initial_temperature, cooling_rate, t
         current_op = random_gate.op
         
         # Flip to a different model
-        random_gate.op = random.choice([random_gate.op1, random_gate.op2, random_gate.op3])
-        
+        if(random_gate.op2!=None and random_gate.op3!=None):
+            random_gate.op = random.choice([random_gate.op, random_gate.op2, random_gate.op3])
+
         # Recalculate the critical path and cost
         new_path, new_path_cost, new_total_delay = find_critical_path(output_gate, gates)
         
@@ -126,4 +127,3 @@ def simulated_annealing(output_gate, gates, initial_temperature, cooling_rate, t
         temperature *= cooling_rate
 
     return best_path, best_path_cost, best_total_delay
-

@@ -180,7 +180,7 @@ def run_ckt(ckt_name, primary_inputs, primary_outputs, gates, wires):
     return data
 
 
-if __name__ == "__main__":
+""" if __name__ == "__main__":
     cell_library = get_cell_library("cell_library.time")
 
     time_files, bench_files, ckt_names = gather_files_by_extension('BENCHMARKS')   
@@ -204,10 +204,10 @@ if __name__ == "__main__":
     primary_inputs, primary_outputs, gates = get_bench_file("s27.bench",cell_library)
     data.append(run_ckt("s27",primary_inputs,primary_outputs,gates, wires))
     df = pd.DataFrame(data, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time (ms)"])
-    df.to_csv('results.csv', index = False)
+    df.to_csv('results.csv', index = False) """
 
 
-""" 
+
 if __name__ == "__main__":
     cell_library = get_cell_library("cell_library.time")
     data = []
@@ -218,4 +218,4 @@ if __name__ == "__main__":
     df = pd.DataFrame(data, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time (ms)"])
     df.to_csv('results.csv', index = False)
 
-    """
+    
