@@ -4,7 +4,7 @@ from math import sqrt, exp
 
 from wire import *
 from gate import *
-
+rec_counter = 0
 def add_delays_wire_gate(w, g):
     w.a0 = w.a0 + g.op.a0
     w.a1 = w.a1 + g.op.a1
@@ -27,6 +27,7 @@ def set_inputs(curr_gate, gates):
     return gate_inp_lst
 
 def traverse_circuit(curr_gate, gates, critical_path, critical_path_cost, total_wire_delay):
+    rec_counter +=1
     delay_wire = Wire()
     
     # Add the gate to the critical path
@@ -34,7 +35,7 @@ def traverse_circuit(curr_gate, gates, critical_path, critical_path_cost, total_
     critical_path_cost += curr_gate.op.cost
     
     # Base case: If the gate has no inputs, return
-    if not curr_gate.inputs:
+    if not curr_gate.inputs  or rec_counter>900:
         return critical_path_cost
     
     # Calculate the delay with each input gate and choose the max delay
