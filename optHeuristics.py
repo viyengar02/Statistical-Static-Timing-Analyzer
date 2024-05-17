@@ -46,8 +46,12 @@ def traverse_circuit(curr_gate, gates, critical_path, critical_path_cost, total_
 
     for input_gate in gate_inp_lst:
         if input_gate.op.op == "INPUT":
-            max_delay_gate = input_gate
-            break
+            if max_delay_gate in critical_path:
+                critical_path_cost = 9999
+                return
+            else:
+                max_delay_gate = input_gate
+                break
         if input_gate.op.a[0] > max_delay_gate.op.a[0]:
             max_delay_gate = input_gate
                 
