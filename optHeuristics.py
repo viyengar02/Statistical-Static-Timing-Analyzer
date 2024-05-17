@@ -26,17 +26,27 @@ def set_inputs(curr_gate, gates):
                 gate_inp_lst.append(gate)
     return gate_inp_lst
 
+def check_if_gate_in_path(gate,critical_path):
+    for step in critical_path:
+        if step.label == gate.label:
+            return True
+    return False
+
 def traverse_circuit(curr_gate, gates, critical_path, critical_path_cost, total_wire_delay, rec_counter):
     rec_counter +=1
     delay_wire = Wire()
+
+    if check_if_gate_in_path(curr_gate,critical_path): return critical_path_cost
     
     # Add the gate to the critical path
     critical_path.insert(0, curr_gate)
     critical_path_cost += curr_gate.op.cost
     
     # Base case: If the gate has no inputs, return
-    if not curr_gate.inputs  or rec_counter>900:
+    if not curr_gate.inputs or rec_counter>900:
         return critical_path_cost
+    
+    
     
     # Calculate the delay with each input gate and choose the max delay
     gate_inp_lst = set_inputs(curr_gate, gates)
@@ -45,8 +55,12 @@ def traverse_circuit(curr_gate, gates, critical_path, critical_path_cost, total_
 
     for input_gate in gate_inp_lst:
         if input_gate.op.op == "INPUT":
-            max_delay_gate = input_gate
-            break
+            if max_delay_gate in critical_path:
+                critical_path_cost = 9999
+                return
+            else:
+                max_delay_gate = input_gate
+                break
         if input_gate.op.a[0] > max_delay_gate.op.a[0]:
             max_delay_gate = input_gate
                 

@@ -209,17 +209,17 @@ def run_ckt_opt(ckt_name, primary_outputs, gates, wires):
 
     data = [ckt_name, critical_path_string, [total_wire_delay.a0,total_wire_delay.a1,total_wire_delay.a2,total_wire_delay.a3], critical_path_cost, (end_time-start_time)*1000]
     return data
-""" 
+'''
 if __name__ == "__main__":
     cell_library = get_cell_library("cell_library.time")
     data = []
     time_files, bench_files, ckt_names = gather_files_by_extension('BENCHMARKS')   
-    wires = get_time_file("s27.time")
-    primary_inputs, primary_outputs, gates = get_bench_file("s27.bench",cell_library)
-    data.append(run_ckt("s27",primary_inputs,primary_outputs,gates, wires))
+    wires = get_time_file("s444.time")
+    primary_inputs, primary_outputs, gates = get_bench_file("s444.bench",cell_library)
+    data.append(run_ckt("s444",primary_outputs,gates, wires))
     df = pd.DataFrame(data, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time (ms)"])
-    df.to_csv('results.csv', index = False)
-"""
+    df.to_csv('results3.csv', index = False)
+'''
 
 if __name__ == "__main__":
     cell_library = get_cell_library("cell_library.time")
@@ -231,7 +231,7 @@ if __name__ == "__main__":
 
     i = 14
     #i = 14, 19
-    for i in range(len(ckt_names)):#[9,11,12]:
+    for i in range(len(ckt_names)):
         wires = get_time_file(time_files[i])
         primary_inputs, primary_outputs, gates = get_bench_file(bench_files[i],cell_library)
         print(ckt_names[i])
@@ -249,9 +249,3 @@ if __name__ == "__main__":
     df = pd.DataFrame(data, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time (ms)"])
     df.to_csv('results.csv', index = False) 
     '''
-
-
-
-
-
-    
