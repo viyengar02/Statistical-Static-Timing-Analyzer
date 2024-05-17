@@ -2,6 +2,7 @@ import re
 import pandas as pd
 import time
 import os
+import sys
 from op import *
 from wire import *
 from gate import *
@@ -143,7 +144,38 @@ def gather_files_by_extension(base_folder):
     # Return the lists of time files, bench files, and time base names
     return time_files, bench_files, time_base_names
 
-def run_ckt(ckt_name, primary_inputs, primary_outputs, gates, wires):
+def run_ckt(ckt_name, primary_outputs, gates, wires):
+    start_time = time.perf_counter()
+    g_copy = gates
+    for gate in gates:
+        input_wires = []
+        output_wires = []
+        for wire in wires:
+            if wire.start_wire == gate.label:
+                output_wires.append(wire)
+            if wire.stop_wire == gate.label:
+                input_wires.append(wire)
+        gate.input_wires = input_wires
+        gate.output_wires = output_wires
+
+    ind = 0
+    for gate in g_copy:
+        if gate.label == primary_outputs[0]:
+            ind = g_copy.index(gate)
+            break
+
+    critical_path, critical_path_cost, total_wire_delay = find_critical_path(gates[ind], gates)
+    
+    critical_path_string = ""
+    for gate in critical_path:
+        critical_path_string += gate.label + "->"
+    critical_path_string = critical_path_string[0:-2]
+    end_time = time.perf_counter()
+
+    data = [ckt_name, critical_path_string, [total_wire_delay.a0,total_wire_delay.a1,total_wire_delay.a2,total_wire_delay.a3], critical_path_cost, (end_time-start_time)*1000]
+    return data
+
+def run_ckt_opt(ckt_name, primary_outputs, gates, wires):
     start_time = time.perf_counter()
     g_copy = gates
     for gate in gates:
@@ -166,7 +198,6 @@ def run_ckt(ckt_name, primary_inputs, primary_outputs, gates, wires):
     initial_temperature = 1000
     cooling_rate = 0.95
     threshold = 0.001
-    #critical_path, critical_path_cost, total_wire_delay = find_critical_path(gates[ind], gates)
     critical_path, critical_path_cost, total_wire_delay = simulated_annealing(gates[ind], gates, initial_temperature, cooling_rate, threshold)
 
     
@@ -196,22 +227,28 @@ if __name__ == "__main__":
     time_files, bench_files, ckt_names = gather_files_by_extension('BENCHMARKS')   
 
     data = []
+    data_opt = []
 
-    i = 0
-    
-    for i in [9,11,12]:
+    i = 14
+    #i = 14, 19
+    for i in range(len(ckt_names)):#[9,11,12]:
         wires = get_time_file(time_files[i])
         primary_inputs, primary_outputs, gates = get_bench_file(bench_files[i],cell_library)
-        data.append(run_ckt(ckt_names[i],primary_inputs,primary_outputs,gates,wires))
+        print(ckt_names[i])
+        data.append(run_ckt(ckt_names[i],primary_outputs,gates,wires))
+        data_opt.append(run_ckt_opt(ckt_names[i],primary_outputs,gates,wires))
 
     df = pd.DataFrame(data, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time (ms)"])
-    df.to_csv('results.csv', index = False)  
-
+    df.to_csv('results2.csv',mode='w+',index = False)  
+    df2 = pd.DataFrame(data_opt, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time (ms)"])
+    df2.to_csv('results_opt2.csv',mode='w+',index = False)  
+    '''
     wires = get_time_file("s27.time")
     primary_inputs, primary_outputs, gates = get_bench_file("s27.bench",cell_library)
     data.append(run_ckt("s27",primary_inputs,primary_outputs,gates, wires))
     df = pd.DataFrame(data, columns=["Benchmark", "Critical Path", "Critical Path Delay", "Cost", "Run Time (ms)"])
     df.to_csv('results.csv', index = False) 
+    '''
 
 
 

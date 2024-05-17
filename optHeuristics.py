@@ -26,7 +26,7 @@ def set_inputs(curr_gate, gates):
                 gate_inp_lst.append(gate)
     return gate_inp_lst
 
-def traverse_circuit(curr_gate, gates, critical_path, critical_path_cost, total_wire_delay):
+def traverse_circuit(curr_gate, gates, critical_path, critical_path_cost, total_wire_delay, rec_counter):
     rec_counter +=1
     delay_wire = Wire()
     
@@ -67,13 +67,13 @@ def traverse_circuit(curr_gate, gates, critical_path, critical_path_cost, total_
         delay_wire = cellMath.max_Obj(a, b)
         
     add_delay_w_w(total_wire_delay, delay_wire)
-    return traverse_circuit(max_delay_gate, gates, critical_path, critical_path_cost, total_wire_delay)
+    return traverse_circuit(max_delay_gate, gates, critical_path, critical_path_cost, total_wire_delay, rec_counter)
 
 def find_critical_path(output_gate, gates):
     critical_path = []
     critical_path_cost = 0
     total_wire_delay = Wire()
-    critical_path_cost = traverse_circuit(output_gate, gates, critical_path, critical_path_cost, total_wire_delay)
+    critical_path_cost = traverse_circuit(output_gate, gates, critical_path, critical_path_cost, total_wire_delay, rec_counter=0)
     return critical_path, critical_path_cost, total_wire_delay
 
 def acceptance_probability(delta_cost, temperature):
