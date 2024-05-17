@@ -27,6 +27,7 @@ def set_inputs(curr_gate, gates):
     return gate_inp_lst
 
 def traverse_circuit(curr_gate, gates, critical_path, critical_path_cost, total_wire_delay):
+    global rec_counter
     rec_counter +=1
     delay_wire = Wire()
     
